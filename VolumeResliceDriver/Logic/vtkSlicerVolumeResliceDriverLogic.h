@@ -28,6 +28,7 @@ class vtkMRMLSliceNode;
 //#define VOLUMERESLICEDRIVER_ORIENTATION_ATTRIBUTE "VolumeResliceDriver.Orientation"
 #define VOLUMERESLICEDRIVER_MODE_ATTRIBUTE "VolumeResliceDriver.Mode"
 #define VOLUMERESLICEDRIVER_ROTATION_ATTRIBUTE "VolumeResliceDriver.Rotation"
+#define VOLUMERESLICEDRIVER_OFFSET_ATTRIBUTE "VolumeResliceDriver.Offset"
 #define VOLUMERESLICEDRIVER_FLIP_ATTRIBUTE "VolumeResliceDriver.Flip"
 
 
@@ -49,7 +50,10 @@ public:
     MODE_CORONAL,
     MODE_INPLANE,
     MODE_INPLANE90,
-    MODE_TRANSVERSE
+    MODE_TRANSVERSE,
+    MODE_TRAJECTORY_1, // like MODE_AXIAL, but disregarding tool rotation about tool axis
+    MODE_TRAJECTORY_2, // like MODE_SAGITTAL, but disregarding tool rotation about tool axis
+    MODE_PROBE_VIEW     // like MODE_TRANSVERSE, but taking into account a user configured offset
   };
 
   /// Set attributes of MRML slice nodes to define reslice driver.
@@ -57,7 +61,8 @@ public:
   void SetModeForSlice( int mode, vtkMRMLSliceNode* sliceNode );
   void SetRotationForSlice( double rotation, vtkMRMLSliceNode* sliceNode );
   void SetFlipForSlice( bool flip, vtkMRMLSliceNode* sliceNode );
-  
+  void SetOffsetForSlice(double offset, vtkMRMLSliceNode* sliceNode);
+
 protected:
   
   void AddObservedNode( vtkMRMLTransformableNode* node );

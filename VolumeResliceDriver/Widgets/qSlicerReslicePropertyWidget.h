@@ -72,6 +72,7 @@ protected slots:
   void onModeChanged(int);
   void onRotationChanged(double);
   void onFlipChanged(int);
+  void onOffsetChanged(double);
   void onLogicModified();
   
   
@@ -81,6 +82,7 @@ private:
   Q_DISABLE_COPY(qSlicerReslicePropertyWidget);
   
   vtkSlicerVolumeResliceDriverLogic* Logic;
+  bool _showAdvanced;
 };
 
 #endif

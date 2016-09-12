@@ -74,7 +74,7 @@ public:
 
 qSlicerVolumeResliceDriverModuleWidgetPrivate
 ::qSlicerVolumeResliceDriverModuleWidgetPrivate( qSlicerVolumeResliceDriverModuleWidget& object )
- : q_ptr(&object), showAdvanced( 0 )
+ : q_ptr(&object), showAdvanced( true )
 {
 }
 

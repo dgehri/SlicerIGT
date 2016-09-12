@@ -58,6 +58,7 @@ public:
   virtual void init();
   void SetDriverNodeSelection( const char* nodeID );
   void SetModeSelection( int mode );
+  int GetModeSelection() const;
   
   QButtonGroup methodButtonGroup;
   QButtonGroup orientationButtonGroup;
@@ -127,6 +128,11 @@ void qSlicerReslicePropertyWidgetPrivate
   this->modeComboBox->setCurrentIndex( mode );
 }
 
+int qSlicerReslicePropertyWidgetPrivate
+::GetModeSelection() const
+{
+    return modeComboBox->currentIndex();
+}
 
 qSlicerReslicePropertyWidget
 ::qSlicerReslicePropertyWidget( vtkSlicerVolumeResliceDriverLogic* logic, QWidget *_parent )
@@ -166,22 +172,35 @@ qSlicerReslicePropertyWidget
 
 
 void qSlicerReslicePropertyWidget
-::showAdvanced( int show )
+::showAdvanced(int show)
 {
-  Q_D(qSlicerReslicePropertyWidget);
-  
-  if ( show )
-  {
-    d->rotationSlider->show();
-    d->rotationLabel->show();
-    d->flipCheckBox->show();
-  }
-  else
-  {
-    d->rotationSlider->hide();
-    d->rotationLabel->hide();
-    d->flipCheckBox->hide();
-  }
+    Q_D(qSlicerReslicePropertyWidget);
+    _showAdvanced = show;
+    if (show)
+    {
+        d->rotationSlider->show();
+        d->rotationLabel->show();
+        d->flipCheckBox->show();
+
+        if (d->GetModeSelection() == vtkSlicerVolumeResliceDriverLogic::MODE_PROBE_VIEW)
+        {
+            d->offsetLabel->show();
+            d->offsetSlider->show();
+        }
+        else
+        {
+            d->offsetLabel->hide();
+            d->offsetSlider->hide();
+        }
+    }
+    else
+    {
+        d->rotationSlider->hide();
+        d->rotationLabel->hide();
+        d->flipCheckBox->hide();
+        d->offsetLabel->hide();
+        d->offsetSlider->hide();
+    }
 }
 
 
@@ -218,7 +237,8 @@ void qSlicerReslicePropertyWidget
   QObject::disconnect(d->modeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onModeChanged(int)));
   QObject::disconnect(d->rotationSlider, SIGNAL(valueChanged(double)), this, SLOT(onRotationChanged(double)));
   QObject::disconnect(d->flipCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onFlipChanged(int)));
-  
+  QObject::disconnect(d->offsetSlider, SIGNAL(valueChanged(double)), this, SLOT(onOffsetChanged(double)));
+
   d->sliceNode = newSliceNode;
   
   if ( newSliceNode->GetScene() )
@@ -230,6 +250,7 @@ void qSlicerReslicePropertyWidget
   QObject::connect(d->modeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onModeChanged(int)));
   QObject::connect(d->rotationSlider, SIGNAL(valueChanged(double)), this, SLOT(onRotationChanged(double)));
   QObject::connect(d->flipCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onFlipChanged(int)));
+  QObject::connect(d->offsetSlider, SIGNAL(valueChanged(double)), this, SLOT(onOffsetChanged(double)));
 }
 
 
@@ -277,7 +298,7 @@ void qSlicerReslicePropertyWidget
   Q_D(qSlicerReslicePropertyWidget);
 
   this->Logic->SetModeForSlice( m, d->sliceNode );
-
+  showAdvanced(_showAdvanced);
 }
 
 
@@ -300,6 +321,13 @@ void qSlicerReslicePropertyWidget
   this->Logic->SetFlipForSlice( f, d->sliceNode );
 }
 
+void qSlicerReslicePropertyWidget
+::onOffsetChanged(double f)
+{
+    Q_D(qSlicerReslicePropertyWidget);
+
+    this->Logic->SetOffsetForSlice(f, d->sliceNode);
+}
 
 
 void qSlicerReslicePropertyWidget
